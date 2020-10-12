@@ -1,237 +1,160 @@
-// 
 
-(function($,sr) {
-  // debouncing function from John Hann
-  // http://unscriptable.com/index.php/2009/03/20/debouncing-javascript-methods/
-  var debounce = function (func, threshold, execAsap) {
-    var timeout;
-    return function debounced () {
-      var obj = this, args = arguments;
-      function delayed () {
-        if (!execAsap)
-                          func.apply(obj, args);
-        timeout = null;
-      }
-      ;
-      if (timeout)
-                    clearTimeout(timeout); else if (execAsap)
-                    func.apply(obj, args);
-      timeout = setTimeout(delayed, threshold || 100);
-    }
-    ;
-  }
-  // smartresize 
-  jQuery.fn[sr] = function(fn) {
-    return fn ? this.bind('resize', debounce(fn)) : this.trigger(sr);
-  }
-  ;
-}
-)(jQuery,'smartresize');
+function main() {
 
-$(function() {
-
-    // Fix the Home Height
-
-    var setHomeBannerHeight = function(){
-	   var homeHeight= $(window).height();
-	   $('#overlay-1').height(homeHeight);
-    }
-    setHomeBannerHeight();
-
-    // Arrow drop effect
-
-    var $scrollDownArrow = $('.bottom > a');
-
-    // Smooth Scrolling and remove Hash tag from link
-
-    $('a[href*=#]:not([href=#])').click(function() {
-       
+(function () {
+   'use strict';
+   
+  	$('a.page-scroll').click(function() {
         if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-            var target = $(this.hash);
-            target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-            if (target.length) {
-                $('html,body').animate({
-                    scrollTop: target.offset().top
-                }, 1000, function(){
-                  
-                });
-                return false;
-            }
+          var target = $(this.hash);
+          target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+          if (target.length) {
+            $('html,body').animate({
+              scrollTop: target.offset().top - 40
+            }, 900);
+            return false;
+          }
+        }
+      });
+
+    ///////////////////////////////////////////////////////////////////////
+ var TxtRotate = function(el, toRotate, period) {
+  this.toRotate = toRotate;
+  this.el = el;
+  this.loopNum = 0;
+  this.period = parseInt(period, 10) || 2000;
+  this.txt = '';
+  this.tick();
+  this.isDeleting = false;
+};
+
+TxtRotate.prototype.tick = function() {
+  var i = this.loopNum % this.toRotate.length;
+  var fullTxt = this.toRotate[i];
+
+  if (this.isDeleting) {
+    this.txt = fullTxt.substring(0, this.txt.length - 1);
+  } else {
+    this.txt = fullTxt.substring(0, this.txt.length + 1);
+  }
+
+  this.el.innerHTML = '<span class="wrap">'+this.txt+'</span>';
+
+  var that = this;
+  var delta = 300 - Math.random() * 100;
+
+  if (this.isDeleting) { delta /= 2; }
+
+  if (!this.isDeleting && this.txt === fullTxt) {
+    delta = this.period;
+    this.isDeleting = true;
+  } else if (this.isDeleting && this.txt === '') {
+    this.isDeleting = false;
+    this.loopNum++;
+    delta = 500;
+  }
+
+  setTimeout(function() {
+    that.tick();
+  }, delta);
+};
+
+window.onload = function() {
+  var elements = document.getElementsByClassName('txt-rotate');
+  for (var i=0; i<elements.length; i++) {
+    var toRotate = elements[i].getAttribute('data-rotate');
+    var period = elements[i].getAttribute('data-period');
+    if (toRotate) {
+      new TxtRotate(elements[i], JSON.parse(toRotate), period);
+    }
+  }
+  // INJECT CSS
+  var css = document.createElement("style");
+  css.type = "text/css";
+  css.innerHTML = ".txt-rotate > .wrap { border-right: 0.08em solid #666 }";
+  document.body.appendChild(css);
+};
+
+
+
+
+
+
+
+   ////////////////////////////////////////////////////////////////////////////
+
+
+
+	
+    // Show Menu on Book
+    $(window).bind('scroll', function() {
+        var navHeight = $(window).height() - 500;
+        if ($(window).scrollTop() > navHeight) {
+            $('.navbar-default').addClass('on');
+        } else {
+            $('.navbar-default').removeClass('on');
         }
     });
 
-
-  ///////////////////////////////
-  // Center Home Slideshow Text
-  ///////////////////////////////
-  function centerHomeBannerText() {
-    var bannerText = jQuery('#header .middle');
-    var bannerTextTop = (jQuery('#header').actual('height')/2) - (jQuery('#header .middle').actual('height')/2) - 20;
-    bannerText.css('padding-top', bannerTextTop+'px');
-    bannerText.show();
-  }
-  centerHomeBannerText();
-
-
-
-    jQuery(window).smartresize(function() {
-        setHomeBannerHeight();
-        centerHomeBannerText();
+    $('body').scrollspy({ 
+        target: '.navbar-default',
+        offset: 80
     });
-    
-});
 
-
-$( function() {
-  // init Isotope
-  var $container = $('.isotope').isotope({
-    itemSelector: '.element-item',
-    layoutMode: 'fitRows',
-    getSortData: {
-      name: '.name',
-      symbol: '.symbol',
-      number: '.number parseInt',
-      category: '[data-category]',
-      weight: function( itemElem ) {
-        var weight = $( itemElem ).find('.weight').text();
-        return parseFloat( weight.replace( /[\(\)]/g, '') );
-      }
+	// Hide nav on click
+  $(".navbar-nav li a").click(function (event) {
+    // check if window is small enough so dropdown is created
+    var toggle = $(".navbar-toggle").is(":visible");
+    if (toggle) {
+      $(".navbar-collapse").collapse('hide');
     }
   });
-
-  // filter functions
-  var filterFns = {
-    // show if number is greater than 50
-    numberGreaterThan50: function() {
-      var number = $(this).find('.number').text();
-      return parseInt( number, 10 ) > 50;
-    },
-    // show if name ends with -ium
-    ium: function() {
-      var name = $(this).find('.name').text();
-      return name.match( /ium$/ );
-    }
-  };
-
-  // bind filter button click
-  $('#filters').on( 'click', 'button', function() {
-    var filterValue = $( this ).attr('data-filter');
-    // use filterFn if matches value
-    filterValue = filterFns[ filterValue ] || filterValue;
-    $container.isotope({ filter: filterValue });
-  });
-
-  // bind sort button click
-  $('#sorts').on( 'click', 'button', function() {
-    var sortByValue = $(this).attr('data-sort-by');
-    $container.isotope({ sortBy: sortByValue });
-  });
-  
-  // change is-checked class on buttons
-  $('.button-group').each( function( i, buttonGroup ) {
-    var $buttonGroup = $( buttonGroup );
-    $buttonGroup.on( 'click', 'button', function() {
-      $buttonGroup.find('.is-checked').removeClass('is-checked');
-      $( this ).addClass('is-checked');
-    });
-  });
-
-  
-});
-
-function countUpTo(count,selector,max)
-    {
-      console.log("count--> "+count);
-        var div_by = count,
-            speed = Math.round(count / div_by),
-            $display = selector,
-            run_count = 1,
-            int_speed = 24;
-
-        var int = setInterval(function() {
-            if(run_count < div_by){
-                $display.text(speed * run_count);
-                run_count++;
-            } else if(parseInt($display.text()) < count) {
-                var curr_count = parseInt($display.text()) + 1;
-                var text = "";
-                if(max>99){
-                     if(curr_count<10){
-                        text = text+"00"+curr_count;
-                    }
-                    /*else if(curr_count < 100 && curr_count >9){
-                        text = text+"0"+curr_count;
-                    }*/
-                    else{
-                      text = curr_count;
-                    }
-                }else if(max<100 && max>9){
-                     if(curr_count<10){
-                        text = text+"00"+curr_count;
-                    }
-                   /*else if(curr_count < 100 && curr_count >9){
-                        text = text+"0"+curr_count;
-                    }*/
-                    else{
-                      text = curr_count;
-                    }
-                }else{
-                      if(curr_count<10){
-                        text = text+"00"+curr_count;
-                    }
-                   /*else if(curr_count < 100 && curr_count >9){
-                        text = text+"0"+curr_count;
-                    }*/
-                    else{
-                      text = curr_count;
-                    }
-                }
-               
-                $display.text(text);
-            } else {
-                clearInterval(int);
+	
+  	// Portfolio isotope filter
+    $(window).load(function() {
+        var $container = $('.portfolio-items');
+        $container.isotope({
+            filter: '*',
+            animationOptions: {
+                duration: 750,
+                easing: 'linear',
+                queue: false
             }
-        }, int_speed);
-    }
+        });
+        $('.cat a').click(function() {
+            $('.cat .active').removeClass('active');
+            $(this).addClass('active');
+            var selector = $(this).attr('data-filter');
+            $container.isotope({
+                filter: selector,
+                animationOptions: {
+                    duration: 750,
+                    easing: 'linear',
+                    queue: false
+                }
+            });
+            return false;
+        });
+
+    });
+	
+
+    // Nivo Lightbox 
+    $('.portfolio-item a').nivoLightbox({
+            effect: 'slideDown',  
+            keyboardNav: true,                            
+        });
+ 
+
+}());
 
 
-var firstTime = true;
-$(document).scroll(function(event) {
 
 
 
-  var result = $('.count-timer').isOnScreen();
 
-  if(result == true) {
-      console.log("on screen");
+}
 
-      if(firstTime){
-        firstTime = false;
-            
-          var count1 = $('.count1'),
-            count2 = $('.count2'),
-            count3 = $('.count3'),
-            count4 = $('.count4'),
-            count5 = $('.count5'),
-            count6 = $('.count6')
-            count1Num = count1.text(),
-            count2Num = count2.text(),
-            count3Num = count3.text(),
-            count4Num = count4.text(),
-            count5Num = count5.text(),
-            count6Num = count6.text();
 
-            var max = Math.max(parseInt(count1Num),parseInt(count2Num));
-            max = Math.max(max,parseInt(count6Num));
-            console.log(max);
 
-            countUpTo(count1Num,count1,max);
-            countUpTo(count2Num,count2,max);
-            countUpTo(count3Num,count3,max);
-            countUpTo(count4Num,count4,max);
-            countUpTo(count5Num,count5,max);
-            countUpTo(count6Num,count6,max);
-      }
-
-    }
-});
+main();
