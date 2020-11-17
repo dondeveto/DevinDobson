@@ -320,9 +320,9 @@ div.ex1 {
 <script>
 function myFunction() {
   
-  window.addEventListener('load', function () {
+  var variableToCancelInterval = setInterval(function(){
   document.getElementById("IL_IN_TAG_AD6").click();
-})
+}, 10000);
 }
 </script>
    
