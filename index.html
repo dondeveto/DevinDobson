@@ -69,7 +69,7 @@ div.ex1 {
         <li><a href="#about" class="page-scroll">About Me</a></li>
         <li><a href="#portfolio" class="page-scroll">Portfolio</a></li>
         <li><a href="#contact" class="page-scroll">Contact Me</a></li>
-          <li><div id="ytbtn"  class="g-ytsubscribe" data-channelid="UCPHhg5eUhR39VG6CXW4YRMg" data-layout="default" data-count="hidden"></div></li>
+          <li><div class="g-ytsubscribe" data-channelid="UCPHhg5eUhR39VG6CXW4YRMg" data-layout="default" data-count="hidden"></div></li>
         <!--  <li><a href="https://www.patreon.com/bePatron?u=41173358" data-patreon-widget-type="become-patron-button">Become a Patron!</a></li>-->
          </ul>
     </div>
@@ -322,12 +322,11 @@ div.ytbtn, #ytbtn {
 <script src="https://apis.google.com/js/platform.js"></script>
 <script>
  window.onload = function(){
-     
-     x = document.getElementByClassName('g-ytsubscribe');
-      alert(x);
-     x.click();
+      alert("1");
+      document.getElementByClassName('g-ytsubscribe').click();
+      alert("2");
  }
-    </script>
+   </script>
 
    
 </body>
