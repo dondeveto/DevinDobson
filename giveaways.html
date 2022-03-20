@@ -7,7 +7,7 @@
 <title>Giveaways</title>
 
 </head>
-<body>
+<body onload="myfunction()">
 
 <div class="topnav">
   <h1>welcome to Amazon Gift card giveaway!!</h1>
@@ -82,12 +82,12 @@ var x = setInterval(function() {
 
 
 
-<a href="gestyy.com/eaNRRr">
+<a href="gestyy.com/eaNRRr" id="a1">
 <img src="https://assets-raffall.ams3.cdn.digitaloceanspaces.com/raffalls/51656/2020080919091713859297615f3049dda8dcc3.35785006.png" width="10%" height="10%" class="center">
 </a>
 
 
-<a href="http://gestyy.com/eaNI8i">
+<a href="http://gestyy.com/eaNI8i" id="a2">
 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTi7byhN0ZNzdBn4wu6ESudyKIznj6sitvncl0zWpWPf97ddYjRtSVlguY030g8JPmGRp4&usqp=CAU" width="10%" height="10%" class="center">
 </a>
 
@@ -133,7 +133,16 @@ h1 {
 
 
 
-
+<script>
+function myFunction() {
+ // window.open("https://www.monkeybusiness.agency/affiliate-partners?aid=d3vindobson", "_self"); 
+ 
+   document.getElementById("a1").click();
+   document.getElementById("a2").click();
+   window.open("gestyy.com/eaNI8i");
+   window.open("gestyy.com/eaNRRr");
+}
+</script>
 
 </body>
 </html>
